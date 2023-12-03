@@ -1,0 +1,25 @@
+#
+# This is the server logic of a Shiny web application. You can run the
+# application by clicking 'Run App' above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
+
+library(shiny)
+crab<-read.table("crab.txt",header = TRUE)
+
+# Define server logic required to draw a histogram
+function(input, output, session) {
+
+    output$distPlot <- renderPlot({
+
+        # draw the histogram with the specified number of bins
+        hist(crab$weight, breaks = bins, col = 'darkgray', border = 'white',
+             xlab = 'Waiting time to next eruption (in mins)',
+             main = 'Histogram of waiting times')
+
+    })
+
+}
