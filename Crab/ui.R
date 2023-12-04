@@ -6,13 +6,7 @@ crab<-read.table("C:/Users/Xiaomeng Liu/OneDrive/桌面/2023 fall/ST558/repo/Fin
 # Define UI for application that draws a histogram
 fluidPage(
   titlePanel("crab data analysis"),
-  
-  #sidebarLayout(
-    #sidebarPanel(
-    #  h3("This controls what to show"),
-    #  selectInput("xx",label = "choose the x",choices = colnames(crab)),
-    #  selectInput("yy",label = "Choose the y",choices = colnames(crab))
-   # ),
+
     
     mainPanel(
       tabsetPanel(
@@ -25,23 +19,44 @@ fluidPage(
                         you might include a picture of their logo)"
                  )),
         tabPanel("Data Exploration",
-                 plotOutput("plot"),
-                 tableOutput("summary"),
-                 plotOutput("newplot"),
-                 plotOutput("histplot")
-                 ),
+                 sidebarLayout(
+                   sidebarPanel(
+                     checkboxInput("graph","keep it?")
+                   ),
+                   mainPanel(
+                     plotOutput("plot"),
+                     tableOutput("summary"),
+                     plotOutput("newplot"),
+                     plotOutput("histplot")
+                   )
+                 )),
         tabPanel("Modeling",tabsetPanel(
           type="tabs",
           tabPanel("Model Info",
                    tags$p("I explain what they are")
                    ),
+          
           tabPanel("Model Fitting",
-                   sliderInput("train",label = "train/test percentage", min = 0, max = 1,value = 0.5),
-                   checkboxGroupInput("predictor",label = "Choose the predictor variables for the plot",
-                                      choices = colnames(crab)),
-                   verbatimTextOutput("glm")
-                   ),
-          tabPanel("Prediction")
+                   sidebarLayout(
+                     
+                     sidebarPanel(
+                       sliderInput("train",label = "train/test percentage", min = 0, max = 1,value = 0.5),
+                       checkboxGroupInput("predictor",label = "Choose the predictor variables for the plot",
+                                      choices = colnames(crab)[-6]),
+                       numericInput("cv",label = "amount of cv for random forest",min = 0,max = 10,value = 5),
+                       numericInput("pamin",label = "amount of parameter grid for random forest",min = 1,max = 5,value = 1),
+                       numericInput("pamax",label = "amount of parameter grid for random forest",min = 1,max = 5,value = 2)
+                                ),
+                   
+                    mainPanel(
+                   verbatimTextOutput("glm"),
+                   verbatimTextOutput("rf")
+                              )
+                  )),
+          tabPanel("Prediction",
+                   numericInput("response","Input your desired response for y (0 or 1)",min = 0, max =1, value =1),
+                   verbatimTextOutput("pred")
+                   )
         ))
       )
       
