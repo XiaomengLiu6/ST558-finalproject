@@ -1,33 +1,33 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+
 
 library(shiny)
 
 # Define UI for application that draws a histogram
 fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
-        )
+  titlePanel("crab data analysis"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      h3("This controls what to show in the Data Exploration"),
+      selectInput("varname",label = "Choose the variable you need",choices = "color")
+    ),
+    mainPanel(
+      tabsetPanel(
+        type="tabs",
+        tabPanel("About",
+                 tags$p("Describe the purpose of the app"),
+                 tags$p("– Briefly discuss the data and its source - providing a link to more information about the data"),
+                 tags$p("Tell the user the purpose of each tab (page) of the app"),
+                 tags$p("Include a picture related to the data (for instance, if the data was about the world wildlife fund,
+                        you might include a picture of their logo)"
+                 )),
+        tabPanel("Data Exploration",
+                 plotOutput("plot"),
+                 tableOutput("summary")
+                 ),
+        tabPanel("Modeling")
+      )
     )
+
+)
 )
