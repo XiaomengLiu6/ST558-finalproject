@@ -14,3 +14,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 crab<-read.table("crab.txt",header = TRUE)
 ```
+
+```{r}
+# test the summary
+variables<-colnames(crab)
+a<-cbind(data.frame(variables),t(sapply(crab[variables],summary)))
+a[1,]
+```
+

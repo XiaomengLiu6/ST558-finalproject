@@ -1,16 +1,19 @@
 
 
 library(shiny)
+crab<-read.table("C:/Users/Xiaomeng Liu/OneDrive/桌面/2023 fall/ST558/repo/Finalproject/crab.txt",header = TRUE)
 
 # Define UI for application that draws a histogram
 fluidPage(
   titlePanel("crab data analysis"),
   
-  sidebarLayout(
-    sidebarPanel(
-      h3("This controls what to show in the Data Exploration"),
-      selectInput("varname",label = "Choose the variable you need",choices = "color")
-    ),
+  #sidebarLayout(
+    #sidebarPanel(
+    #  h3("This controls what to show"),
+    #  selectInput("xx",label = "choose the x",choices = colnames(crab)),
+    #  selectInput("yy",label = "Choose the y",choices = colnames(crab))
+   # ),
+    
     mainPanel(
       tabsetPanel(
         type="tabs",
@@ -23,11 +26,26 @@ fluidPage(
                  )),
         tabPanel("Data Exploration",
                  plotOutput("plot"),
-                 tableOutput("summary")
+                 tableOutput("summary"),
+                 plotOutput("newplot"),
+                 plotOutput("histplot")
                  ),
-        tabPanel("Modeling")
+        tabPanel("Modeling",tabsetPanel(
+          type="tabs",
+          tabPanel("Model Info",
+                   tags$p("I explain what they are")
+                   ),
+          tabPanel("Model Fitting",
+                   sliderInput("train",label = "train/test percentage", min = 0, max = 1,value = 0.5),
+                   checkboxGroupInput("predictor",label = "Choose the predictor variables for the plot",
+                                      choices = colnames(crab)),
+                   verbatimTextOutput("glm")
+                   ),
+          tabPanel("Prediction")
+        ))
       )
+      
     )
 
-)
+#)
 )
