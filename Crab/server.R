@@ -59,7 +59,7 @@ function(input, output, session) {
     crab_train<-crab[act()$index,] 
     crab_test<-crab[-act()$index,]
     fit.logit<-glm(act()$pp,family = binomial(link = "logit"),data = crab_train)
-    summary(fit.logit)
+    list(summary(fit.logit),confusionMatrix(data=as.factor(crab_test$y),predict(fit.logit,crab_test)))
   })
   
   # section for random forest output
@@ -73,7 +73,7 @@ function(input, output, session) {
                   preProcess=c("center","scale"),
                   tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))
 
-    fit.rf
+    list(fit.rf,confusionMatrix(data=as.factor(crab_test$y),predict(fit.rf,crab_test)))
   })
   
 
@@ -83,22 +83,8 @@ function(input, output, session) {
     crab_test<-crab[-act()$index,]
     
     fit.logit<-glm(act()$pp,family = binomial(link = "logit"),data = crab_train)
-    ndata<-data.frame()
-    if ('width' %in% act()$prediction){
-      ndata<-cbind(ndata,data.frame(width = input$pre1))
-      if ('color' %in% act()$prediction){
-        ndata<-cbind(ndata,data.frame(color = input$pre2))
-        if ('spine' %in% act()$prediction){
-          ndata<-cbind(ndata,data.frame(spine = input$pre3))
-          if ('satell' %in% act()$prediction){
-            ndata<-cbind(ndata,data.frame(satell = input$pre4))
-            if ('weight' %in% act()$prediction){
-              ndata<-cbind(ndata,data.frame(weight = input$pre5))
-            }
-          }
-        }
-      }
-    }
+    pre<-c(input$pre1,input$pre2,input$pre3,input$pre4,input$pre5)
+    ndata<-data.frame('width'=pre[1], 'color'=pre[2], 'spine'=pre[3], 'satell'=pre[4], 'weight'=pre[5])
     predict(fit.logit,ndata)
   })
 }
