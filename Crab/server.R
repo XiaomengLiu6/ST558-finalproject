@@ -11,78 +11,94 @@ set.seed(123)
 # Define server logic required to draw a histogram
 function(input, output, session) {
 
-  graph<-reactive({
-    gg<-input$graph
+  # name selection plot as sp
+  sp<-reactive({
+    gg<-input$selectplot
   })
   output$plot<-renderPlot({
-    if (graph()=="TRUE"){
-    p1<-plot(crab$width,crab$satell)
-    p1
+    if (sp()=="scatter plot"){
+    plot(crab$width,crab$satell)
+    }
+    if (sp()=="histogram"){
+    g+ geom_histogram(aes(x=width))
+    }
+    if (sp()=="multivariate relatinoships plots"){
+    g+geom_point(aes(x=width,y=satell,color = color))
     }
   }
   )
-  
+
+  va<-reactive({
+    vv<-input$num_var
+  })
+
   output$summary<-renderTable({
-    variables<-colnames(crab)[1]
+    variables<-va()
     cbind(data.frame(variables),t(sapply(crab[variables],summary)))
-  }
+    }
   )
   
-  output$newplot<-renderPlot({
-    g+geom_point(aes(x=width,y=satell,color = color))
-  })
-  
-  output$histplot<-renderPlot({
-    g+ geom_histogram(aes(x=width))
-  })
+
   
   # split the training and testing
- index<-reactive({
-    indextrain<-createDataPartition(y=crab$satell,p=input$train,list=FALSE)
-  })   
+  act<-eventReactive(input$action,{
+    index<-createDataPartition(y=crab$satell,p=input$train,list=FALSE)
+    cc<-input$cv
+    pa1<-input$pamin
+    pa2<-input$pamax
+    pp<-paste0("y~",paste(c(input$predictor),collapse = "+"))
+    pp1<-paste0("as.factor(y)~",paste(c(input$predictor),collapse = "+"))
+    prediction<-c(input$predictor)
+    list(pp=pp,pp1=pp1,index=index,cc=cc,pa1=pa1,pa2=pa2,prediction = prediction)
+  })
+ 
 
  
 # section for glm
- # input the predictors
- pred<-reactive({
-   pp<-paste0("y~",paste(c(input$predictor),collapse = "+"))
- })
-  
   output$glm<- renderPrint({    
-    crab_train<-crab[index(),] 
-    crab_test<-crab[-index(),]
-    fit.logit<-glm(pred(),family = binomial(link = "logit"),data = crab_train)
+    crab_train<-crab[act()$index,] 
+    crab_test<-crab[-act()$index,]
+    fit.logit<-glm(act()$pp,family = binomial(link = "logit"),data = crab_train)
     summary(fit.logit)
   })
   
   # section for random forest output
-  pred1<-reactive({
-    pp1<-paste0("as.factor(y)~",paste(c(input$predictor),collapse = "+"))
-  })
-  cv1<-reactive({
-    cc<-input$cv
-  })
-  
-  pa1<-reactive({
-    pa1<-input$pamin
-  })
-  pa2<-reactive({
-    pa2<-input$pamax
-  })
   output$rf<-renderPrint({
-    crab_train<-crab[index(),] 
-    crab_test<-crab[-index(),]
+    crab_train<-crab[act()$index,] 
+    crab_test<-crab[-act()$index,]
 
-    fit.rf<-train(as.formula(pred1()), data = crab_train,
+    fit.rf<-train(as.formula(act()$pp1), data = crab_train,
                   method="rf",
-                  trControl = trainControl(method = "cv",number = cv1()),
+                  trControl = trainControl(method = "cv",number = act()$cc),
                   preProcess=c("center","scale"),
-                  tuneGrid = data.frame(mtry=c(pa1():pa2())))
+                  tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))
 
     fit.rf
   })
   
+
+  # prediction tab
   output$pred<-renderPrint({
+    crab_train<-crab[act()$index,] 
+    crab_test<-crab[-act()$index,]
     
+    fit.logit<-glm(act()$pp,family = binomial(link = "logit"),data = crab_train)
+    ndata<-data.frame()
+    if ('width' %in% act()$prediction){
+      ndata<-cbind(ndata,data.frame(width = input$pre1))
+      if ('color' %in% act()$prediction){
+        ndata<-cbind(ndata,data.frame(color = input$pre2))
+        if ('spine' %in% act()$prediction){
+          ndata<-cbind(ndata,data.frame(spine = input$pre3))
+          if ('satell' %in% act()$prediction){
+            ndata<-cbind(ndata,data.frame(satell = input$pre4))
+            if ('weight' %in% act()$prediction){
+              ndata<-cbind(ndata,data.frame(weight = input$pre5))
+            }
+          }
+        }
+      }
+    }
+    predict(fit.logit,ndata)
   })
 }
