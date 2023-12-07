@@ -9,6 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+library(caret)
+```
+
 # 1. read in data
 
 ```{r}
@@ -18,7 +23,26 @@ crab<-read.table("crab.txt",header = TRUE)
 ```{r}
 # test the summary
 variables<-colnames(crab)
-a<-cbind(data.frame(variables),t(sapply(crab[variables],summary)))
-a[1,]
+#a<-cbind(data.frame(variables),t(sapply(crab[variables],summary)))
+
+```
+
+```{r}
+# fit a rf model
+fit.logit<-train(as.formula(as.factor(y)~width),data = crab,
+                     method = "glm",
+                     preProcess=c("center","scale"))
+fit.logit
+```
+```{r}
+ndata<-data.frame('width'=28.3, 'color'= 3)
+predict(fit.logit,ndata)
+```
+
+```{r}
+in1<-c("aa","bb")
+in1
+recode(in1, "aa" = 1)
+
 ```
 

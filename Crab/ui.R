@@ -41,11 +41,24 @@ fluidPage(
                      selectInput("selectplot","Select the plot to show",
                                  choices = c("scatter plot","histogram",
                                              "multivariate relatinoships plots")),
+                     conditionalPanel(condition = "input.selectplot == 'scatter plot'",
+                                      selectInput("xs","x for scatter plot",choices = colnames(crab)[-c(4,6)])
+                                      ),
+                     conditionalPanel(condition = "input.selectplot == 'histogram'",
+                                      selectInput("xs","x for histogram",choices = colnames(crab)[-c(4,6)])
+                     ),
+                     conditionalPanel(condition = "input.selectplot == 'multivariate relatinoships plots'",
+                                      selectInput("xs","x for mutlivariate relationship plot",choices = colnames(crab)[-c(4,6)])
+                     ),
                      checkboxGroupInput("num_var",label = "Choose the variables for the summary",
-                                        choices = colnames(crab))
+                                        choices = colnames(crab)),
+                     checkboxGroupInput("feature",label = "Choose the variables features",
+                                        choices = c("min","Q1","median","mean","Q2","max","std dev")),
+                     actionButton("action1","Click here to run the numerical summaries")
                    ),
                    mainPanel(
                      plotOutput("plot"),
+                     br(),
                      tableOutput("summary")
                    )
                  )),
@@ -75,19 +88,34 @@ fluidPage(
                   )),
           tabPanel("Prediction",
                    conditionalPanel(condition = "input.predictor.includes('width')",
-                                    numericInput("pre1","Inputt your desired value for width",min = 0, max =9999, value =1)
+                                    h3("Input your desired value for width"),
+                                    numericInput("pre1","Width has a suggested 
+                                                 range between ",
+                                                 min = 0, max =9999, value =26.1)
                    ),
                    conditionalPanel(condition = "input.predictor.includes('color')",
-                                    numericInput("pre2","Inputt your desired value for color",min = 0, max =9999, value =1)
+                                    h3("Input your desired value for color"),
+                                    numericInput("pre2","Color has a suggested 
+                                                 range between",
+                                                 min = 0, max =9999, value =3)
                    ),
                    conditionalPanel(condition = "input.predictor.includes('spine')",
-                                    numericInput("pre3","Inputt your desired value for spine",min = 0, max =9999, value =1)
+                                    h3("Input your desired value for spine"),
+                                    numericInput("pre3","Spine has a suggested 
+                                                 range between ",
+                                                 min = 0, max =9999, value =3)
                    ),
                    conditionalPanel(condition = "input.predictor.includes('satell')",
-                                    numericInput("pre4","Inputt your desired value for satell",min = 0, max =9999, value =1)
+                                    h3("Input your desired value for satell"),
+                                    numericInput("pre4","Satell has a suggested 
+                                                 range between 0 and 5",
+                                                 min = 0, max =9999, value = 2)
                    ),
                    conditionalPanel(condition = "input.predictor.includes('weight')",
-                                    numericInput("pre5","Inputt your desired value for weight",min = 0, max =9999, value =1)
+                                    h3("Input your desired value for weight"),
+                                    numericInput("pre5","Weight has a suggested
+                                                 range between ",
+                                                 min = 0, max =9999, value =2350.0)
                    ),
                    
                    verbatimTextOutput("pred")
