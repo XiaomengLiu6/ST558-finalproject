@@ -11,19 +11,56 @@ set.seed(123)
 # Define server logic required to draw a histogram
 function(input, output, session) {
 
+  output$source<-renderUI({
+    tagList("More info about data:",
+            a("Orginal Paper",href='https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1439-0310.1996.tb01099.x'))
+  })
+  output$source1<-renderUI({
+    tagList("The picture is from this link:",
+            a("picture source",href='https://tbrnewsmedia.com/long-island-scientists-seek-horseshoe-crab-answers/'))
+  })
+  output$crabpic<-renderImage({
+    list(src='C:/Users/Xiaomeng Liu/OneDrive/桌面/2023 fall/ST558/repo/Finalproject/horseshoe_crab.jpg',
+    contentType="image/jpeg",
+    width = 700,
+    height = 500
+    )
+    },deleteFile = FALSE
+  )
   # name selection plot as sp
   sp<-reactive({
     gg<-input$selectplot
   })
+  
+  s1<-reactive({
+    xs1<-input$xs1
+    ys1<-input$ys1
+    list(xs1=xs1,ys1=ys1)
+  })
+  s2<-reactive({
+    xs2<-input$xs2
+  })
+  s3<-reactive({
+    xs3<-input$xs3
+    ys3<-input$ys3
+    zs3<-input$zs3
+    list(xs3=xs3,ys3=ys3,zs3=zs3)
+  })
+
   output$plot<-renderPlot({
     if (sp()=="scatter plot"){
-    plot(crab$width,crab$satell)
+    plot(crab[,s1()$xs1],crab[,s1()$ys1],
+         xlab = s1()$xs1,ylab=s1()$ys1, 
+         main = paste0("This is the scatter plot for ",s1()$xs1," vs. ",
+                       s1()$ys1))
     }
     if (sp()=="histogram"){
-    g+geom_col(aes(x=width))
+      hist(crab[,s2()],xlab = s2(),main = paste0("This is the histogram for ",
+                                                 s2()))
     }
     if (sp()=="multivariate relatinoships plots"){
-    g+geom_point(aes(x=width,y=y,color = color))
+    g+geom_point(aes_string(x=s3()$xs3,y=s3()$ys3,color = s3()$zs3))
+      # an update need here
     }
   }
   )

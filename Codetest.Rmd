@@ -43,6 +43,9 @@ predict(fit.logit,ndata)
 in1<-c("aa","bb")
 in1
 recode(in1, "aa" = 1)
-
+```
+```{r}
+plot(crab$color,crab$satell)
+crab[,"color"]
 ```
 

@@ -12,10 +12,12 @@ fluidPage(
       tabsetPanel(
         type="tabs",
         tabPanel("About",
+                 h4("Purpose of the app."),
                  tags$p("The app is for studying the relationship between the 
                  number of male satellite crabs residing near the female and 
                         female crab information"),
-                 
+                 br(),
+                 h4("Brief data introduction and its source"),
                  tags$p("The data come from a study originally described by Brockman 
                  (Ethology 102:1 - 21,[1996]) and since reproduced in Agresti's 
                         text Categorical Data Analysis. The data has n=173  
@@ -25,16 +27,19 @@ fluidPage(
                         is simply a binary indicator for whether the number of 
                         satellite crabs is greater than 0. There are several 
                         predictor variables that give characteristics of the 
-                        female crab. 
-                        https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1439-0310.1996.tb01099.x"),
-                 
+                        female crab."),
+                 uiOutput("source"),
+                 br(),
+                 h4("The purpose of each tab of this app."),
                  tags$p("In this app, three tabs are provided:
                         'About' provides basic information about the app.
                         'Data Exploration' provides numerical and graphical summaries about the crab data.
                         'Modeling' provides two types of supervised learning models for the data"),
-                 tags$p("Include a picture related to the data (for instance, if the data was about the world wildlife fund,
-                        you might include a picture of their logo)"
-                 )),
+                 br(),
+                 h4("This is the picture of a horseshoe crab."),
+                 uiOutput("source1"),
+                 imageOutput("crabpic")
+                 ),
         tabPanel("Data Exploration",
                  sidebarLayout(
                    sidebarPanel(
@@ -42,13 +47,16 @@ fluidPage(
                                  choices = c("scatter plot","histogram",
                                              "multivariate relatinoships plots")),
                      conditionalPanel(condition = "input.selectplot == 'scatter plot'",
-                                      selectInput("xs","x for scatter plot",choices = colnames(crab)[-c(4,6)])
+                                      selectInput("xs1","x for scatter plot",choices = colnames(crab)[-c(4,6)]),
+                                      selectInput("ys1","y for scatter plot",choices = colnames(crab)[c(4,6)])
                                       ),
                      conditionalPanel(condition = "input.selectplot == 'histogram'",
-                                      selectInput("xs","x for histogram",choices = colnames(crab)[-c(4,6)])
+                                      selectInput("xs2","x for histogram",choices = colnames(crab)[-c(4,6)])
                      ),
                      conditionalPanel(condition = "input.selectplot == 'multivariate relatinoships plots'",
-                                      selectInput("xs","x for mutlivariate relationship plot",choices = colnames(crab)[-c(4,6)])
+                                      selectInput("xs3","x for multivariate relationship plot",choices = colnames(crab)[-c(4,6)]),
+                                      selectInput("ys3","y for multivariate relationship plot",choices = colnames(crab)[c(4,6)]),
+                                      selectInput("zs3","third variable for multivariate relationship plot",choices = colnames(crab)[-c(4,6)])
                      ),
                      checkboxGroupInput("num_var",label = "Choose the variables for the summary",
                                         choices = colnames(crab)),
@@ -59,6 +67,9 @@ fluidPage(
                    mainPanel(
                      plotOutput("plot"),
                      br(),
+                     h3("Numerical summary for the crab data"), 
+                     h5("Please select the variable(s) and feature(s), then hit 
+                        the button to show"),
                      tableOutput("summary")
                    )
                  )),
