@@ -65,6 +65,20 @@ function(input, output, session) {
   }
   )
 
+  observe({
+    if(input$xs3=="color"){
+    updateSelectInput(session,"zs3",choices = c("spine","width","weight"))
+    }
+    else if (input$xs3 == "spine"){
+      updateSelectInput(session,"zs3",choices = c("color","width","weight"))
+    }
+    else if (input$xs3 == "width"){
+      updateSelectInput(session,"zs3",choices = c("spine","color","weight"))
+    }
+    else if (input$xs3 == "weight"){
+      updateSelectInput(session,"zs3",choices = c("spine","width","color"))
+    }
+  })
   act1<-eventReactive(input$action1,{
     vv<-input$num_var
     ff<-input$feature
@@ -109,10 +123,12 @@ function(input, output, session) {
   output$glm<- renderPrint({    
     crab_train<-crab[act()$index,] 
     crab_test<-crab[-act()$index,]
+    withProgress(message = "Calculation in progress",{
     fit.logit<-train(as.formula(act()$pp1),data = crab_train,
                                  method = "glm",
                                  preProcess=c("center","scale"))
     crab_test$y<-as.factor(crab_test$y)
+    })
     list(fit.logit,summary(fit.logit))
   })
   
@@ -120,20 +136,20 @@ function(input, output, session) {
   output$rf<-renderPrint({
     crab_train<-crab[act()$index,] 
     crab_test<-crab[-act()$index,]
-
+    withProgress(message = "Calculation in progress",{
     fit.rf<-train(as.formula(act()$pp1), data = crab_train,
                   method="rf",
                   trControl = trainControl(method = "cv",number = act()$cc),
                   preProcess=c("center","scale"),
                   tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))
-
+    })
     list(fit.rf,summary(fit.rf$finalModel))
   })
   
   output$compare<-renderPrint({
     crab_train<-crab[act()$index,] 
     crab_test<-crab[-act()$index,]
-    
+    withProgress(message = "Calculation in progress",{
     fit.logit<-train(as.formula(act()$pp1),data = crab_train,
                      method = "glm",
                      preProcess=c("center","scale"))
@@ -141,7 +157,7 @@ function(input, output, session) {
                   method="rf",
                   trControl = trainControl(method = "cv",number = act()$cc),
                   preProcess=c("center","scale"),
-                  tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))
+                  tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))})
     list(confusionMatrix(data=as.factor(crab_test$y),predict(fit.logit,crab_test)),
          confusionMatrix(data=as.factor(crab_test$y),predict(fit.rf,crab_test)))
   })
@@ -151,7 +167,7 @@ function(input, output, session) {
   output$pred<-renderPrint({
     crab_train<-crab[act()$index,] 
     crab_test<-crab[-act()$index,]
-    
+    withProgress(message = "Calculation in progress",{
     fit.logit<-train(as.formula(act()$pp1),data = crab_train,
                      method = "glm",
                      preProcess=c("center","scale"))
@@ -163,7 +179,7 @@ function(input, output, session) {
     pre<-c(input$pre1,input$pre2,input$pre3,input$pre4,input$pre5)
     ndata<-data.frame('width'=pre[1], 'color'=pre[2], 'spine'=pre[3], 'satell'=pre[4], 'weight'=pre[5])
     randomforest_prediction<-predict(fit.rf,ndata)
-    glm_prediction<-predict(fit.logit,ndata)
+    glm_prediction<-predict(fit.logit,ndata)})
     list(glm_prediction=glm_prediction,randomforest_prediction=randomforest_prediction)
   })
 }
