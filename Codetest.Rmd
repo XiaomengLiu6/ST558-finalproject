@@ -33,6 +33,12 @@ fit.logit<-train(as.formula(as.factor(y)~width),data = crab,
                      method = "glm",
                      preProcess=c("center","scale"))
 fit.logit
+fit.rf<-train(as.formula(as.factor(y)~width), data = crab,
+                  method="rf",
+                  trControl = trainControl(method = "cv",number = 5),
+                  preProcess=c("center","scale"),
+                  tuneGrid = data.frame(mtry=c(1:2)))
+fit.rf$modelInfo
 ```
 ```{r}
 ndata<-data.frame('width'=28.3, 'color'= 3)
@@ -49,3 +55,4 @@ plot(crab$color,crab$satell)
 crab[,"color"]
 ```
 
+$P(success/x)=/divide{}$

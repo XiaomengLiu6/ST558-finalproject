@@ -58,7 +58,7 @@ function(input, output, session) {
       hist(crab[,s2()],xlab = s2(),main = paste0("This is the histogram for ",
                                                  s2()))
     }
-    if (sp()=="multivariate relatinoships plots"){
+    if (sp()=="multivariate relatinoship plots"){
     g+geom_point(aes_string(x=s3()$xs3,y=s3()$ys3,color = s3()$zs3))
       # an update need here
     }
@@ -113,7 +113,7 @@ function(input, output, session) {
                                  method = "glm",
                                  preProcess=c("center","scale"))
     crab_test$y<-as.factor(crab_test$y)
-    list(fit.logit,confusionMatrix(data=crab_test$y,predict(fit.logit,crab_test)))
+    list(fit.logit,summary(fit.logit))
   })
   
   # section for random forest output
@@ -127,7 +127,23 @@ function(input, output, session) {
                   preProcess=c("center","scale"),
                   tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))
 
-    list(fit.rf,confusionMatrix(data=as.factor(crab_test$y),predict(fit.rf,crab_test)))
+    list(fit.rf,summary(fit.rf$finalModel))
+  })
+  
+  output$compare<-renderPrint({
+    crab_train<-crab[act()$index,] 
+    crab_test<-crab[-act()$index,]
+    
+    fit.logit<-train(as.formula(act()$pp1),data = crab_train,
+                     method = "glm",
+                     preProcess=c("center","scale"))
+    fit.rf<-train(as.formula(act()$pp1), data = crab_train,
+                  method="rf",
+                  trControl = trainControl(method = "cv",number = act()$cc),
+                  preProcess=c("center","scale"),
+                  tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))
+    list(confusionMatrix(data=as.factor(crab_test$y),predict(fit.logit,crab_test)),
+         confusionMatrix(data=as.factor(crab_test$y),predict(fit.rf,crab_test)))
   })
   
 
@@ -146,6 +162,8 @@ function(input, output, session) {
                   tuneGrid = data.frame(mtry=c(act()$pa1:act()$pa2)))
     pre<-c(input$pre1,input$pre2,input$pre3,input$pre4,input$pre5)
     ndata<-data.frame('width'=pre[1], 'color'=pre[2], 'spine'=pre[3], 'satell'=pre[4], 'weight'=pre[5])
-    list(predict(fit.logit,ndata),predict(fit.rf,ndata))
+    randomforest_prediction<-predict(fit.rf,ndata)
+    glm_prediction<-predict(fit.logit,ndata)
+    list(glm_prediction=glm_prediction,randomforest_prediction=randomforest_prediction)
   })
 }
