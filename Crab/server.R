@@ -3,7 +3,7 @@ library(shiny)
 library(tidyverse)
 library(caret)
 # reconsider about this data input
-crab<-read.table("C:/Users/Xiaomeng Liu/OneDrive/桌面/2023 fall/ST558/repo/Finalproject/crab.txt",header = TRUE)
+crab<-read.table("crab.txt",header = TRUE)
 g<-ggplot(crab)
 # set the seed
 set.seed(123)

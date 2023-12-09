@@ -1,7 +1,7 @@
 
 
 library(shiny)
-crab<-read.table("C:/Users/Xiaomeng Liu/OneDrive/桌面/2023 fall/ST558/repo/Finalproject/crab.txt",header = TRUE)
+crab<-read.table("crab.txt",header = TRUE)
 
 # Define UI for application that draws a histogram
 fluidPage(
