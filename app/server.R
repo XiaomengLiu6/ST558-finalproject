@@ -20,7 +20,7 @@ function(input, output, session) {
             a("picture source",href='https://tbrnewsmedia.com/long-island-scientists-seek-horseshoe-crab-answers/'))
   })
   output$crabpic<-renderImage({
-    list(src='C:/Users/Xiaomeng Liu/OneDrive/桌面/2023 fall/ST558/repo/Finalproject/horseshoe_crab.jpg',
+    list(src='horseshoe_crab.jpg',
     contentType="image/jpeg",
     width = 700,
     height = 500
