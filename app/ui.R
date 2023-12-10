@@ -138,14 +138,18 @@ fluidPage(
                           variable"),
                        numericInput("cv",label = "amount of cv for random forest",
                                     min = 0,max = 10,value = 5),
-                       numericInput("pamin",label = "amount of parameter grid 
+                       numericInput("pamin",label = "amount of min parameter grid 
                                     for random forest",min = 1,max = 5,value = 1),
-                       numericInput("pamax",label = "amount of parameter grid 
+                       numericInput("pamax",label = "amount of max parameter grid 
                                     for random forest",min = 1,max = 5,value = 2),
                        actionButton("action","Click here to run the models")
                                 ),
                    
                     mainPanel(
+                      h2("Selecting the 'satell' predictor would cause warnings
+                         from R console. An inappropriate tungrid selection for
+                         random forest would also cause warnings. The function 
+                         is not affected and will provide results."),
                       h3("Results from glm with accuracy as fit stat."),
                       h4("Please make the selections then hit action button to show the results."),
                       verbatimTextOutput("glm"),
