@@ -10,6 +10,7 @@ fluidPage(
     mainPanel(
       tabsetPanel(
         type="tabs",
+        # include the introduction and links and photos
         tabPanel("About",
                  h4("Purpose of the app."),
                  tags$p("The app is for studying the relationship between the 
@@ -40,7 +41,7 @@ fluidPage(
                  uiOutput("source1"),
                  imageOutput("crabpic")
                  ),
-        
+        # include selection of plot output and action button for numerical summary
         tabPanel("Data Exploration",
                  sidebarLayout(
                    sidebarPanel(
@@ -73,6 +74,7 @@ fluidPage(
                      tableOutput("summary")
                    )
                  )),
+        # explain the two models using in this study
         tabPanel("Modeling",tabsetPanel(
           type="tabs",
           tabPanel("Model Info",
@@ -123,7 +125,8 @@ fluidPage(
                           building many trees."),
                    tags$p("2. It loses interpretability for each variable.")
                    ),
-          
+          # fit both model with inputs and action button
+          # random forest has more inputs for number of cv and tune grid
           tabPanel("Model Fitting",
                    sidebarLayout(
                      
@@ -161,6 +164,8 @@ fluidPage(
                       verbatimTextOutput("compare")
                       )
                   )),
+          # provide only input options for those included in the previous page
+          # use a conditional panel to filter it
           tabPanel("Prediction",
                    conditionalPanel(condition = "input.predictor.includes('width')",
                                     h3("Input your desired value for width"),
